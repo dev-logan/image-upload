@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <title>Document</title>
+        <script>
+            function upload() {
+                const imageInput = $('#imageInput')[0]
+                // 파일을 여러개 선택할 수 있으므로 files 라는 객체에 담긴다.
+                console.log('imageInput: ', imageInput.files)
+
+                if (imageInput.files.length === 0) {
+                    alert('파일은 선택해주세요')
+                    return
+                }
+
+                const formData = new FormData()
+                formData.append('profile_image', imageInput.files[0])
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://localhost:3000/api/upload',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    headers: {
+                        Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmYW5jeWVyIiwiaWF0IjoxNjQ1MDkwNTQyfQ.unU3PcIWsnm7svuqZbW9QEqX_4XIEAlFf-HWWpacEmg'
+                    },
+                    success: function (rtn) {
+                        const message = rtn.data.values[0]
+                        console.log('message: ', message)
+                        $('#resultUploadPath').text(message.uploadFilePath)
+                    },
+                    err: function (err) {
+                        console.log('err:', err)
+                    },
+                })
+            }
+        </script>
+    </head>
+    <body>
+        <p>이미지 업로드 테스트 창</p>
+        <div>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <input type="file" id="imageInput" />
+            </form>
+            <hr />
+            <button onclick="upload()">업로드</button>
+            <hr />
+            <p>업로드결과:</p>
+            <p id="resultUploadPath"></p>
+        </div>
+    </body>
+</html>
